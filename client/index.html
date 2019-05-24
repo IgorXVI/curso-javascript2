@@ -13,7 +13,7 @@
 
     <h1 class="text-center">Negociações</h1>
 
-    <form class="form">
+    <form class="form" onsubmit="negociacaoController.adiciona(event)">
 
         <div class="form-group">
             <label for="data">Data</label>
@@ -64,11 +64,14 @@
 </body>
 
 <script src="js/index.js"></script>
+<script src="js/app/Negociacao.js"></script>
+<script src="js/app/NegociacaoController.js"></script>
+<script src="js/helpers/DateHelper.js"></script>
+<script src="js/models/ListaNegociacoes.js"></script>
+
 
 <script>
-    let n1 = new Negociacao(new Date(), 5,700);
-    n1.quantidade = 10;
-    console.log(n1.quantidade);
+    let negociacaoController = new NegociacaoController();
 </script>
 
 </html>
