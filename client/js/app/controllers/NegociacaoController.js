@@ -7,41 +7,24 @@ class NegociacaoController {
         this._inputQuantidade = $('#quantidade');
         this._inputValor = $('#valor');
 
-        let self = this;
+        this._listaNegociacoes = new Bind(
+            new ListaNegociacoes(),
+            new NegociacoesView($('#negociacoesView')),
+            'adiciona', 'esvazia'
+        );
 
-        this._listaNegociacoes = new Proxy(new ListaNegociacoes(), {
+        this._mensagem = new Bind(
+            new Mensagem(),
+            new MensagemView($('#mensagemView')),
+            'texto'
+        );
 
-            get(target, prop, receiver) {
-
-                if (['adiciona', 'esvazia'].includes(prop) && typeof (target[prop]) == typeof (Function)) {
-
-                    return function () {
-
-                        console.log(`método '${prop}' interceptado`);
-
-                        Reflect.apply(target[prop], target, arguments);
-
-                        self._negociacoesView.update(target);
-
-                    }
-                }
-
-                return Reflect.get(target, prop, receiver);
-            }
-        });
-
-        this._negociacoesView = new NegociacoesView($('#negociacoesView'));
-        this._negociacoesView.update(this._listaNegociacoes);
-        this._mensagem = new Mensagem();
-        this._mensagemView = new MensagemView($('#mensagemView'));
-        this._mensagemView.update(this._mensagem);
     }
 
     adiciona(event) {
-
         event.preventDefault();
+
         this._listaNegociacoes.adiciona(this._criaNegociacao());
-        this._negociacoesView.update(this._listaNegociacoes);
 
         this._mensagem.texto = 'Negociacao adicionada com sucesso';
 
@@ -50,9 +33,25 @@ class NegociacaoController {
 
     apaga() {
         this._listaNegociacoes.esvazia();
-        this._negociacoesView.update(this._listaNegociacoes);
 
         this._mensagem.texto = 'Negociacoes apagadas com sucesso';
+    }
+
+    importaNegociacoes() {
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', 'negociacoes/semana');
+
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    console.log('Obtendo as negociações do servidor.')
+                } else {
+                    console.log('Não foi possível obter as negociações do servidor.')
+                }
+            }
+        };
+
+        xhr.send();
     }
 
     _criaNegociacao() {
