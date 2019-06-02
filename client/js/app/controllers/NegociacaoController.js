@@ -11,11 +11,13 @@ class NegociacaoController {
         this._listaNegociacoes = new Bind(
             new ListaNegociacoes(),
             new NegociacoesView($('#negociacoesView')),
-            'adiciona', 'esvazia');
+            'adiciona', 'esvazia', 'ordena');
 
         this._mensagem = new Bind(
             new Mensagem(), new MensagemView($('#mensagemView')),
             'texto');
+
+        this._ordemAtual = '';
     }
 
     adiciona(event) {
@@ -29,7 +31,7 @@ class NegociacaoController {
     importaNegociacoes() {
 
         let service = new NegociacaoService();
-        
+
         service
             .obterNegociacoes()
             .then(negociacoes => {
@@ -46,6 +48,16 @@ class NegociacaoController {
         this._mensagem.texto = 'Negociações apagadas com sucesso';
     }
 
+    ordenaColuna(coluna) {
+        if(this._ordemAtual == coluna) {
+            this._listaNegociacoes.ordena((a, b) => b[coluna] - a[coluna]);
+            this._ordemAtual = '';
+        } else {
+            this._listaNegociacoes.ordena((a, b) => a[coluna] - b[coluna]);
+            this._ordemAtual = coluna;
+        }
+    }
+
     _criaNegociacao() {
 
         return new Negociacao(
@@ -55,7 +67,6 @@ class NegociacaoController {
     }
 
     _limpaFormulario() {
-
         this._inputData.value = '';
         this._inputQuantidade.value = 1;
         this._inputValor.value = 0.0;
